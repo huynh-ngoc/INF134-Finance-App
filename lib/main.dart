@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'pages/home.dart';
+import 'pages/wallet.dart';
+import 'pages/what_if.dart';
+import 'pages/invest.dart';
+import 'pages/settings.dart';
 
-void main() {
-  runApp(FinancialApp());
-}
+void main() => runApp(FinancialApp());
 
 class FinancialApp extends StatelessWidget {
   @override
@@ -24,11 +27,11 @@ class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    Center(child: Text('Home Page 🏠')),
-    Center(child: Text('Wallet Page 💰')),
-    Center(child: Text('What If Page 🤔')),
-    Center(child: Text('Invest Page 📈')),
-    Center(child: Text('Settings Page ⚙️')),
+    HomePage(),
+    WalletPage(),
+    WhatIfPage(),
+    InvestPage(),
+    SettingsPage(),
   ];
 
   void _onItemTapped(int index) {
