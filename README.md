@@ -30,3 +30,36 @@ A minimalist finance app built with **Flutter**, designed to help users manage t
    ```bash
    git clone https://github.com/huynh-ngoc/INF134-Finance-App.git
    cd INF134-Finance-App
+
+2. Set up your Flutter environment:
+   - Follow the official Flutter installation guide for macOS: [Flutter Installation Guide (macOS)](https://docs.flutter.dev/get-started/install/macos)
+   - Focus on setting up for web development only. (No Android/iOS setup needed for now.)
+
+3. Verify your setup:
+   - Run the following command to ensure Flutter is correctly installed:
+     ```bash
+     flutter doctor
+     ```
+   - Check that there are no critical issues (especially for Flutter, Dart, and Chrome/Web support).
+
+4. Run the project:
+   - Launch the app locally in the browser:
+     ```bash
+     flutter run -d chrome
+     ```
+
+## 👥 Collaboration Rules
+
+1. Always create a new branch before making any changes to avoid conflicts:
+   ```bash
+   git checkout -b your-branch-name
+
+2. After making changes, push to your branch: 
+```bash
+git add .
+git commit -m "your descriptive message"
+git push origin your-branch-name
+```
+
+3. Then, create a Pull Request (PR) for review before merging into main.
+
