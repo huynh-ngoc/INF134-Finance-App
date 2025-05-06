@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+
+
+
+
 import 'pages/home.dart';
 import 'pages/invest.dart';
 import 'pages/settings.dart';
 import 'pages/wallet.dart';
 import 'pages/what_if.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 void main() => runApp(FinancialApp());
 
@@ -12,7 +18,11 @@ class FinancialApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Finance Buddy',
-      theme: ThemeData(primarySwatch: Colors.teal),
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.tealAccent),
+        textTheme: GoogleFonts.nunitoSansTextTheme(),
+      ),
       home: MainPage(),
     );
   }
