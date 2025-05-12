@@ -61,7 +61,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Finance Buddy')),
+      //appBar: AppBar(title: Text('Finance Buddy')),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: _navItems,
