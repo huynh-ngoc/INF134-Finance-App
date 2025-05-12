@@ -5,6 +5,7 @@ import 'pages/settings.dart';
 import 'pages/wallet/wallet.dart';
 import 'pages/what_if.dart';
 
+
 void main() => runApp(FinancialApp());
 
 class FinancialApp extends StatelessWidget {

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'widgets/budget_summary.dart';
 import 'widgets/transaction_list.dart';
 import 'widgets/add_transaction_form.dart';
+import '../shared_wallets/shared_wallets_page.dart';
+
 
 class WalletPage extends StatefulWidget {
   const WalletPage({Key? key}) : super(key: key);
@@ -57,6 +59,10 @@ class _WalletPageState extends State<WalletPage> {
                   trailing: const Icon(Icons.arrow_forward_ios),
                   onTap: () {
                     // TODO: Navigate to Shared Wallet page
+                    Navigator.push(
+                      context, 
+                      MaterialPageRoute(builder: (context) => const SharedWalletPage()),
+                    );
                   },
                 ),
               ),
