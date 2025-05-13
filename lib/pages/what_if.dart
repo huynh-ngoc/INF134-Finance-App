@@ -32,28 +32,41 @@ class _WhatIfPageState extends State<WhatIfPage> {
     double savings = income - expenses;
     double budgetImpact = income > 0 ? (savings / income) * 100 : 0;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("What If Planner"),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return DefaultTabController(
+
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("What If Planner"),
+          centerTitle: true,
+          bottom: TabBar(
+            tabs: [
+              Tab(text: "Create Plan"),
+              Tab(text: "Track Progress"),
+            ],
+          ),
+        ),
+
+        //Tab 1: Create Plan
+        body: TabBarView(
           children: [
-            Text("1. Select Financial Scenario & Add Description", style: TextStyle(fontWeight: FontWeight.bold)),
-            DropdownButtonFormField<String>(
-              value: selectedScenario,
-              items: scenarios.map((scenario) {
-                return DropdownMenuItem(value: scenario, child: Text(scenario));
-              }).toList(),
-              onChanged: (value) => setState(() => selectedScenario = value!),
-              decoration: InputDecoration(border: OutlineInputBorder(), contentPadding: EdgeInsets.symmetric(horizontal: 12)),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              decoration: InputDecoration(labelText: "Description", border: OutlineInputBorder()),
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("1. Select Financial Scenario & Add Description", style: TextStyle(fontWeight: FontWeight.bold)),
+                  DropdownButtonFormField<String>(  
+                    value: selectedScenario,
+                    items: scenarios.map((scenario) {
+                      return DropdownMenuItem(value: scenario, child: Text(scenario));
+                    }).toList(),
+                    onChanged: (value) => setState(() => selectedScenario = value!),
+                    decoration: InputDecoration(border: OutlineInputBorder(), contentPadding: EdgeInsets.symmetric(horizontal: 12)),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    decoration: InputDecoration(labelText: "Description", border: OutlineInputBorder()),
               keyboardType: TextInputType.text,
               onChanged: (val) {
                 // Optional: store in state if needed
@@ -133,11 +146,48 @@ class _WhatIfPageState extends State<WhatIfPage> {
                 subtitle: Text("Pay \$${(goalAmount / 10 * 1.05).toStringAsFixed(2)} for 10 months (includes 5% interest)"),
                 ),
               ),
-
             ]
           ],
         ),
       ),
+
+      //TAB 2: track progress
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(" Track Your Progress", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                  SizedBox(height: 16),
+                  if (!planSaved)
+                    Text("No plan saved yet. Create a plan first on the other tab.",
+                        style: TextStyle(color: Colors.grey))
+                  else ...[
+                    Text("Scenario: $selectedScenario"),
+                    Text("Goal: \$${goalAmount.toStringAsFixed(2)}"),
+                    Text("Estimated Time: ${timeRequired.toStringAsFixed(1)} months"),
+                    SizedBox(height: 16),
+                    LinearProgressIndicator(
+                      value: 0.3, // You can bind this to actual progress value
+                      minHeight: 20,
+                      backgroundColor: Colors.grey[300],
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
+                    ),
+                    SizedBox(height: 8),
+                    Text("Progress: 30% (mocked)")
+                    // You can later update this with real saving data
+                  ]
+                ],
+              ),
+            ),
+    ],
+    ),
+      
+          
+      
+
+
+      )
     );
   }
 }
