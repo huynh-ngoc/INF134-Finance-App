@@ -11,7 +11,11 @@ class _WhatIfPageState extends State<WhatIfPage> {
   double goalAmount = 0;
   double income = 0;
   double expenses = 0;
+  double monthlySavingRequired = 0;  //for calculate monthly savings
+  double timeRequired = 0;          //for calculate time required to save
   bool planSaved = false;
+
+
 
   final List<String> scenarios = [
     'Cutting daily coffee',
@@ -22,7 +26,11 @@ class _WhatIfPageState extends State<WhatIfPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    // Calculate savings based on income and expenses
+    //Calculate budget impact based on income and expenses
     double savings = income - expenses;
+    double budgetImpact = income > 0 ? (savings / income) * 100 : 0;
 
     return Scaffold(
       appBar: AppBar(
@@ -34,7 +42,7 @@ class _WhatIfPageState extends State<WhatIfPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("1. Select Financial Scenario", style: TextStyle(fontWeight: FontWeight.bold)),
+            Text("1. Select Financial Scenario & Add Description", style: TextStyle(fontWeight: FontWeight.bold)),
             DropdownButtonFormField<String>(
               value: selectedScenario,
               items: scenarios.map((scenario) {
@@ -44,18 +52,28 @@ class _WhatIfPageState extends State<WhatIfPage> {
               decoration: InputDecoration(border: OutlineInputBorder(), contentPadding: EdgeInsets.symmetric(horizontal: 12)),
             ),
             SizedBox(height: 16),
-
-            Text("2. Enter Item Price & Goal Amount", style: TextStyle(fontWeight: FontWeight.bold)),
             TextField(
-              decoration: InputDecoration(labelText: "Item Price (\$)", border: OutlineInputBorder()),
-              keyboardType: TextInputType.number,
-              onChanged: (val) => setState(() => itemPrice = double.tryParse(val) ?? 0),
+              decoration: InputDecoration(labelText: "Description", border: OutlineInputBorder()),
+              keyboardType: TextInputType.text,
+              onChanged: (val) {
+                // Optional: store in state if needed
+              },
             ),
             SizedBox(height: 12),
+
+
+
+            Text("2. Enter Purchase Amount & Goal Timeline", style: TextStyle(fontWeight: FontWeight.bold)),
             TextField(
               decoration: InputDecoration(labelText: "Goal Amount (\$)", border: OutlineInputBorder()),
               keyboardType: TextInputType.number,
               onChanged: (val) => setState(() => goalAmount = double.tryParse(val) ?? 0),
+            ),
+            SizedBox(height: 12),
+            TextField(
+              decoration: InputDecoration(labelText: "Goal Timeline (months)", border: OutlineInputBorder()),
+              keyboardType: TextInputType.number,
+              onChanged: (val) => setState(() => timeRequired = double.tryParse(val) ?? 0),
             ),
             SizedBox(height: 16),
 
@@ -73,23 +91,50 @@ class _WhatIfPageState extends State<WhatIfPage> {
             ),
             SizedBox(height: 16),
 
-            Text("4. Explore Your Savings Plan", style: TextStyle(fontWeight: FontWeight.bold)),
-            Text("You could save \$${savings.toStringAsFixed(2)} per month.",
-                style: TextStyle(fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w500)),
-            SizedBox(height: 20),
+            
+            // Text("4. Explore Your Savings Plan", style: TextStyle(fontWeight: FontWeight.bold)),
+            // Text("You could save \$${savings.toStringAsFixed(2)} per month.",
+            //     style: TextStyle(fontSize: 16, color: Colors.teal, fontWeight: FontWeight.w500)),
+            // SizedBox(height: 20),
 
             ElevatedButton(
               onPressed: () {
-                setState(() => planSaved = true);
-                // You can save to local storage or Wallet page here
+                
+                // Calculate monthly savings required to reach the goal amount
+                setState(() {
+                  planSaved = true;
+                  if (goalAmount > 0 && savings > 0) {
+                    monthlySavingRequired = goalAmount / timeRequired;
+                  }
+                });
               },
-              child: Text("Save Plan to Wallet"),
+              child: Text("Calculate"),
             ),
-            if (planSaved)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text("✅ Plan Saved!", style: TextStyle(color: Colors.green)),
-              )
+
+            //display results if plan is saved
+            if (planSaved) ...[
+              SizedBox(height: 12),
+              Text("📘 Results", style: TextStyle(fontWeight: FontWeight.bold)),
+              Text("Monthly Saving Required: \$${monthlySavingRequired.toStringAsFixed(2)}"),
+              Text("Time required: ${timeRequired.toStringAsFixed(1)} months"),
+              Text("Budget Impact: It is ${( monthlySavingRequired/ savings * 100).toStringAsFixed(1)}% of your savings"),
+
+              SizedBox(height: 16),
+              Text("Alternative Options", style: TextStyle(fontWeight: FontWeight.bold)),
+              Card(
+                child: ListTile(
+                title: Text("Reduce non-essential spending"),
+                subtitle: Text("Save additional \$150/month to achieve in ${(goalAmount / (savings + 150)).toStringAsFixed(1)} months"),
+               ),
+              ),
+              Card(
+                child: ListTile(
+                title: Text("Financing Option"),
+                subtitle: Text("Pay \$${(goalAmount / 10 * 1.05).toStringAsFixed(2)} for 10 months (includes 5% interest)"),
+                ),
+              ),
+
+            ]
           ],
         ),
       ),
