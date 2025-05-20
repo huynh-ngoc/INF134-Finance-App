@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'pages/home.dart';
 import 'pages/invest.dart';
 import 'pages/settings.dart';
-import 'pages/wallet.dart';
+import 'pages/wallet/wallet.dart';
 import 'pages/what_if.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 
 
 void main() => runApp(FinancialApp());
