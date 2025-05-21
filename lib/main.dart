@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-
+import 'package:provider/provider.dart';
+import './pages/models/transaction_provider.dart';
 
 
 import 'pages/home.dart';
@@ -12,7 +12,16 @@ import 'package:google_fonts/google_fonts.dart';
 
 
 
-void main() => runApp(FinancialApp());
+
+void main() => runApp(
+  ChangeNotifierProvider(
+    create: (_) => TransactionProvider(),
+    child: FinancialApp(),
+    ),
+  );
+
+
+
 
 class FinancialApp extends StatelessWidget {
   @override

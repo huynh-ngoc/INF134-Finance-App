@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 import 'widgets/budget_summary.dart';
 import 'widgets/transaction_list.dart';
 import 'widgets/add_transaction_form.dart';
-import '../shared_wallets/shared_wallets_page.dart';
+import './shared_wallets/shared_wallets_page.dart';
+
+import 'package:provider/provider.dart';
+import '../models/transaction_provider.dart';
+import 'transactions_page.dart';
+
+
 
 
 class WalletPage extends StatefulWidget {
@@ -87,9 +93,23 @@ class _WalletPageState extends State<WalletPage> {
               const SizedBox(height: 30),
 
               // Transaction List
-              const Text(
-                'Transaction History',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              //const Text(
+                //'Transaction History',
+                //style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              //),
+              
+              Row(
+                children: [
+                  const Text('Transaction History',
+                    style: 
+                      TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  const Spacer(),
+                  TextButton(onPressed: ()=> Navigator.of(context).push(MaterialPageRoute(builder: (_) => const TransactionsPage()),
+                  ), 
+                  child: const Text('View all')),
+                  
+                ],
+
               ),
               const SizedBox(height: 10),
               const TransactionList(), // Transaction list widget
