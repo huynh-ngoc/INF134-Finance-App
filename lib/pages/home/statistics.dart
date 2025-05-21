@@ -1,12 +1,22 @@
+import 'package:financial_app/pages/models/transaction_provider.dart';
+import 'package:financial_app/pages/wallet/models/transaction.dart';
 import 'package:flutter/material.dart';
+
+import 'graph.dart';
 
 class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});
+
+  
+
   @override
   State<StatisticsPage> createState() => _StatisticsPageState();
 }
 
 class _StatisticsPageState extends State<StatisticsPage> {
+
+  StatsRange _range = StatsRange.week;
+  TxKind _kind  = TxKind.expense;
   
   int _selectedIndex = 1;
 
@@ -44,20 +54,18 @@ class _StatisticsPageState extends State<StatisticsPage> {
             
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(labels.length, (i) {
-                final isSel = i == _selectedIndex;
+              children: StatsRange.values.map((r) {
+                final sel = r == _range;
+                final label = r.name[0].toUpperCase() + r.name.substring(1);
                 return GestureDetector(
-                  onTap: () => setState(() => _selectedIndex = i),
-                  child: Text(
-                    labels[i],
-                    style: TextStyle(
-                      fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
-                      fontSize: 16,
-                      color: isSel ? Colors.black : Colors.black54,
-                    ),
-                  ),
+                  onTap: () => setState(() => _range = r),
+                  child: Text(label,
+                      style: TextStyle(
+                        fontWeight: sel ? FontWeight.bold : FontWeight.normal,
+                        color: sel ? Colors.black : Colors.black54,
+                      )),
                 );
-              }),
+              }).toList(),
             ),
 
             const SizedBox(height: 24),
@@ -65,24 +73,33 @@ class _StatisticsPageState extends State<StatisticsPage> {
            
             Row(
               children: [
-                Expanded(child: _statCard('\$2,258','Expenses',
-                    bg: Colors.black, fg: Colors.white)),
+                Expanded(child: _statCard('\$', 'Expenses',
+                    selected: _kind == TxKind.expense,
+                    onTap: () => setState(() => _kind = TxKind.expense))),
                 const SizedBox(width: 12),
-                Expanded(child: _statCard('\$5,900','Incomes',
-                    bg: Colors.white, fg: Colors.black)),
+                Expanded(child: _statCard('\$', 'Income',
+                    selected: _kind == TxKind.income,
+                    onTap: () => setState(() => _kind = TxKind.income),
+                    inverted: true)),
               ],
             ),
 
             const SizedBox(height: 24),
 
             // Graph TBD
-            Container(
+            SizedBox(
               height: 200,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+              child: Card(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: StatisticsBar(
+                    kind:  _kind,
+                    range: _range,
+                    color: _kind == TxKind.expense ? Colors.black : Colors.green,
+                  ),
+                ),
               ),
-              child: const Center(child: Text('📈')),
             ),
 
             // transactions list,
@@ -92,29 +109,32 @@ class _StatisticsPageState extends State<StatisticsPage> {
     );
   }
 
-  Widget _statCard(String amount, String label,
-      {required Color bg, required Color fg}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          Text(amount,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: fg,
-              )),
-          const SizedBox(height: 4),
-          Text(label,
-              style: TextStyle(
-                fontSize: 14,
-                color: fg,
-              )),
-        ],
+   Widget _statCard(String amount, String label,
+      {required bool selected,
+       required VoidCallback onTap,
+       bool inverted = false}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: selected ^ inverted ? Colors.black : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.black12),
+        ),
+        child: Column(
+          children: [
+            Text(amount,
+                style: TextStyle(
+                    color: selected ^ inverted ? Colors.white : Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18)),
+            Text(label,
+                style: TextStyle(
+                    color:
+                        selected ^ inverted ? Colors.white70 : Colors.black54)),
+          ],
+        ),
       ),
     );
   }

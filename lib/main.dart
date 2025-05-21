@@ -68,17 +68,31 @@ class _MainPageState extends State<MainPage> {
     BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
   ];
 
-  @override
+   @override
   Widget build(BuildContext context) {
+    // --- START OF MODIFICATION ---
     return Scaffold(
-      //appBar: AppBar(title: Text('Finance Buddy')),
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: _navItems,
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.teal,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
+      backgroundColor: Colors.black, // Set the background color of the Scaffold to black
+      body: Center( // Center your app content
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: 350, // Set your desired maximum width here (e.g., 600-800 is common for phone-like experiences)
+          ),
+          child: Container(
+            color: Theme.of(context).scaffoldBackgroundColor, // Use the default scaffold background color for your app content
+            child: Scaffold( // Your original Scaffold now becomes the child of the constrained container
+              //appBar: AppBar(title: Text('Finance Buddy')),
+              body: _pages[_selectedIndex],
+              bottomNavigationBar: BottomNavigationBar(
+                items: _navItems,
+                currentIndex: _selectedIndex,
+                selectedItemColor: Colors.teal,
+                onTap: _onItemTapped,
+                type: BottomNavigationBarType.fixed,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

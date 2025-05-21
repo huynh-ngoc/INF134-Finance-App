@@ -43,6 +43,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
 
         isIncome: _isIncome,
         category: _category,
+        kind: _isIncome ? TxKind.income : TxKind.expense,
       );
 
       //dummyTransactions.add(newTransaction); // add to dummy list
