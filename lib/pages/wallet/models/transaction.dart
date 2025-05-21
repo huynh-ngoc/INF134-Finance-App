@@ -1,9 +1,15 @@
+enum TxKind { income, expense }
+
+
+
 class Transaction {
   final String title;      // Name of the transaction (e.g., "Groceries")
   final double amount;     // Amount of money
   final DateTime date;     // Date of the transaction
   final bool isIncome;     // True if income, False if expense
   final String category;   // Category: "Needs", "Wants", "Goals", "Income"
+  final TxKind kind; 
+  
 
   Transaction({
     required this.title,
@@ -11,10 +17,13 @@ class Transaction {
     required this.date,
     required this.isIncome,
     required this.category,
+    required this.kind, 
   });
 }
 
 // Dummy data for testing (can be replaced with real data later)
+/*
+
 List<Transaction> dummyTransactions = [
   Transaction(
     title: "Paycheck",
@@ -45,3 +54,4 @@ List<Transaction> dummyTransactions = [
     category: 'Goals',
   ),
 ];
+*/

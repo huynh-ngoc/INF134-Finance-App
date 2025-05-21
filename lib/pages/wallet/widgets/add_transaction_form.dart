@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import '../models/transaction.dart';
 
+import 'package:provider/provider.dart';
+
+import '../../models/transaction_provider.dart';
+import 'package:intl/intl.dart';
+
+
 class AddTransactionForm extends StatefulWidget {
   final VoidCallback onTransactionAdded;  
 
@@ -15,6 +21,9 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
 
   String _title = '';
   double _amount = 0.0;
+  DateTime _date = DateTime.now(); 
+
+
   String _category = 'Needs';
   bool _isIncome = false;
 
@@ -25,12 +34,24 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
       final newTransaction = Transaction(
         title: _title,
         amount: _amount,
-        date: DateTime.now(),
+
+    
+
+        //date: DateTime.now(),
+
+        date: _date,
+
         isIncome: _isIncome,
         category: _category,
+        kind: _isIncome ? TxKind.income : TxKind.expense,
       );
 
-      dummyTransactions.add(newTransaction); // add to dummy list
+      //dummyTransactions.add(newTransaction); // add to dummy list
+
+      Provider.of<TransactionProvider>(context, listen: false)
+        .add(newTransaction);
+
+
 
       widget.onTransactionAdded();  // <-- call the callback to refresh WalletPage
       Navigator.of(context).pop(); // close the bottom sheet
@@ -66,6 +87,26 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                 onSaved: (value) => _amount = double.tryParse(value!) ?? 0,
                 validator: (value) => value!.isEmpty ? 'Please enter an amount' : null,
               ),
+              const SizedBox(height: 12),
+              ListTile(
+                contentPadding: EdgeInsets.zero, 
+                leading: const Icon(Icons.calendar_today_outlined),
+                title: Text(DateFormat.yMMMd().format(_date)),
+                onTap: () async {
+                  final choose = await showDatePicker(
+                    context: context,
+                    firstDate: DateTime(DateTime.now().year - 5),
+                    lastDate: DateTime(DateTime.now().year + 5),
+                    initialDate: _date,
+                  );
+
+                  if (choose != null)
+                  {
+                    setState(()=> _date = choose); 
+                  }
+                },
+              ),
+
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 value: _category,

@@ -1,0 +1,1 @@
+const double kWidgetBorder = 16.0; 
