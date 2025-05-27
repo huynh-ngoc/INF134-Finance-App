@@ -1,19 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import './pages/models/transaction_provider.dart';
+
+
 import 'pages/home.dart';
 import 'pages/invest.dart';
 import 'pages/settings.dart';
 import 'pages/wallet/wallet.dart';
 import 'pages/what_if.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 
-void main() => runApp(FinancialApp());
+
+
+void main() => runApp(
+  ChangeNotifierProvider(
+    create: (_) => TransactionProvider(),
+    child: FinancialApp(),
+    ),
+  );
+
+
+
 
 class FinancialApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Finance Buddy',
-      theme: ThemeData(primarySwatch: Colors.teal),
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.tealAccent),
+        textTheme: GoogleFonts.nunitoSansTextTheme(),
+      ),
       home: MainPage(),
     );
   }
@@ -49,17 +68,31 @@ class _MainPageState extends State<MainPage> {
     BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
   ];
 
-  @override
+   @override
   Widget build(BuildContext context) {
+    // --- START OF MODIFICATION ---
     return Scaffold(
-      appBar: AppBar(title: Text('Finance Buddy')),
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: _navItems,
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.teal,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
+      backgroundColor: Colors.black, // Set the background color of the Scaffold to black
+      body: Center( // Center your app content
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: 350, // Set your desired maximum width here (e.g., 600-800 is common for phone-like experiences)
+          ),
+          child: Container(
+            color: Theme.of(context).scaffoldBackgroundColor, // Use the default scaffold background color for your app content
+            child: Scaffold( // Your original Scaffold now becomes the child of the constrained container
+              //appBar: AppBar(title: Text('Finance Buddy')),
+              body: _pages[_selectedIndex],
+              bottomNavigationBar: BottomNavigationBar(
+                items: _navItems,
+                currentIndex: _selectedIndex,
+                selectedItemColor: Colors.teal,
+                onTap: _onItemTapped,
+                type: BottomNavigationBarType.fixed,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
