@@ -15,7 +15,10 @@ class _WhatIfPageState extends State<WhatIfPage> {
   double timeRequired = 0;          //for calculate time required to save
   bool planSaved = false;
 
-
+  //for tracking amount and time left on the progress bar
+  DateTime? planStartDate;
+  double manualAmountSaved = 0; double tempSavingsInput = 0; // for the input field
+  double monthsPassedAuto = 0;
 
   final List<String> scenarios = [
     'Cutting daily coffee',
@@ -31,6 +34,13 @@ class _WhatIfPageState extends State<WhatIfPage> {
     //Calculate budget impact based on income and expenses
     double savings = income - expenses;
     double budgetImpact = income > 0 ? (savings / income) * 100 : 0;
+
+    // Auto-calculate time passed
+    if (planStartDate != null) {
+      final now = DateTime.now();
+      final daysPassed = now.difference(planStartDate!).inDays;
+      monthsPassedAuto = (daysPassed / 30).clamp(0, timeRequired); // rough month estimate
+    }
 
     return DefaultTabController(
 
@@ -68,9 +78,7 @@ class _WhatIfPageState extends State<WhatIfPage> {
                   TextField(
                     decoration: InputDecoration(labelText: "Description", border: OutlineInputBorder()),
               keyboardType: TextInputType.text,
-              onChanged: (val) {
-                // Optional: store in state if needed
-              },
+              
             ),
             SizedBox(height: 12),
 
@@ -116,6 +124,7 @@ class _WhatIfPageState extends State<WhatIfPage> {
                 // Calculate monthly savings required to reach the goal amount
                 setState(() {
                   planSaved = true;
+                  planStartDate = DateTime.now();   //set the start date to now
                   if (goalAmount > 0 && savings > 0) {
                     monthlySavingRequired = goalAmount / timeRequired;
                   }
@@ -127,7 +136,7 @@ class _WhatIfPageState extends State<WhatIfPage> {
             //display results if plan is saved
             if (planSaved) ...[
               SizedBox(height: 12),
-              Text("📘 Results", style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(" Results", style: TextStyle(fontWeight: FontWeight.bold)),
               Text("Monthly Saving Required: \$${monthlySavingRequired.toStringAsFixed(2)}"),
               Text("Time required: ${timeRequired.toStringAsFixed(1)} months"),
               Text("Budget Impact: It is ${( monthlySavingRequired/ savings * 100).toStringAsFixed(1)}% of your savings"),
@@ -167,15 +176,56 @@ class _WhatIfPageState extends State<WhatIfPage> {
                     Text("Goal: \$${goalAmount.toStringAsFixed(2)}"),
                     Text("Estimated Time: ${timeRequired.toStringAsFixed(1)} months"),
                     SizedBox(height: 16),
+
+                    // Display current savings and progress
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: "Manual Amount Saved (\$)",
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (val) {
+                        setState(() {
+                          tempSavingsInput = double.tryParse(val) ?? 0;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          manualAmountSaved += tempSavingsInput; // Add to the saved amount
+                          tempSavingsInput = 0; // Reset input field
+                        });
+                      },
+                      child: Text("Add Savings!"),
+                      ),
+
+                    Text("Saving Progress"),
                     LinearProgressIndicator(
-                      value: 0.3, // You can bind this to actual progress value
+
+                      // Calculate progress based on manual amount saved
+                      //if goalAmount is 0, set progress to 0
+                      //if goalAmount is greater than 0, calculate progress
+                      value: goalAmount > 0 ? (manualAmountSaved / goalAmount).clamp(0, 1) : 0,
+
                       minHeight: 20,
                       backgroundColor: Colors.grey[300],
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
                     ),
                     SizedBox(height: 8),
-                    Text("Progress: 30% (mocked)")
-                    // You can later update this with real saving data
+
+                    // Display progress text
+                    Text("Progress: \$${manualAmountSaved.toStringAsFixed(2)} of \$${goalAmount.toStringAsFixed(2)}"),
+                    
+                    Text("Time Progress"),
+                    LinearProgressIndicator(
+                      value: timeRequired > 0 ? (monthsPassedAuto / timeRequired).clamp(0, 1) : 0,
+                      minHeight: 20,
+                      backgroundColor: Colors.grey[300],
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
+                    ),
+                    Text("Time Passed: ${monthsPassedAuto.toStringAsFixed(1)} months"),
                   ]
                 ],
               ),
