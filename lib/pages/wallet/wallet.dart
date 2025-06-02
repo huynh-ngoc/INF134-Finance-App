@@ -3,6 +3,8 @@ import 'widgets/budget_summary.dart';
 import 'widgets/transaction_list.dart';
 import 'widgets/add_transaction_form.dart';
 import './shared_wallets/shared_wallets_page.dart';
+import './split_bill/split_bill_page.dart';
+
 
 import 'package:provider/provider.dart';
 import '../models/transaction_provider.dart';
@@ -37,7 +39,6 @@ class _WalletPageState extends State<WalletPage> {
 
               const SizedBox(height: 20),
 
-              // Split Bill Section (Coming Soon)
               Card(
                 elevation: 3,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -47,7 +48,12 @@ class _WalletPageState extends State<WalletPage> {
                   subtitle: const Text('Track shared expenses with friends or partners.'),
                   trailing: const Icon(Icons.arrow_forward_ios),
                   onTap: () {
-                    // TODO: Navigate to Split Bill page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SplitBillPage(), 
+                      ),
+                    );
                   },
                 ),
               ),
@@ -64,7 +70,6 @@ class _WalletPageState extends State<WalletPage> {
                   subtitle: const Text('Manage family or group wallets.'),
                   trailing: const Icon(Icons.arrow_forward_ios),
                   onTap: () {
-                    // TODO: Navigate to Shared Wallet page
                     Navigator.push(
                       context, 
                       MaterialPageRoute(builder: (context) => const SharedWalletPage()),
