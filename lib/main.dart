@@ -70,18 +70,16 @@ class _MainPageState extends State<MainPage> {
 
    @override
   Widget build(BuildContext context) {
-    // --- START OF MODIFICATION ---
     return Scaffold(
-      backgroundColor: Colors.black, // Set the background color of the Scaffold to black
-      body: Center( // Center your app content
+      backgroundColor: Colors.black, 
+      body: Center( 
         child: ConstrainedBox(
           constraints: const BoxConstraints(
-            maxWidth: 350, // Set your desired maximum width here (e.g., 600-800 is common for phone-like experiences)
+            maxWidth: 350, 
           ),
           child: Container(
-            color: Theme.of(context).scaffoldBackgroundColor, // Use the default scaffold background color for your app content
-            child: Scaffold( // Your original Scaffold now becomes the child of the constrained container
-              //appBar: AppBar(title: Text('Finance Buddy')),
+            color: Theme.of(context).scaffoldBackgroundColor, 
+            child: Scaffold( 
               body: _pages[_selectedIndex],
               bottomNavigationBar: BottomNavigationBar(
                 items: _navItems,

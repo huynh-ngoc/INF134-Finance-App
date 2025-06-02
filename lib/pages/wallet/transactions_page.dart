@@ -20,12 +20,13 @@ class TransactionsPage extends StatelessWidget {
     final months = provider.byMonth(); 
     final now = DateTime.now(); 
     final keys = List<DateTime>.generate(
-      6,
-      (i) => DateTime(now.year, now.month - i),
-    );
+      13,
+      (i) => DateTime(now.year, now.month - 6 + i),
+    )..sort();
 
 
     return DefaultTabController(
+      initialIndex: 6,
       length: keys.length,
       child: Scaffold(
         appBar: AppBar(

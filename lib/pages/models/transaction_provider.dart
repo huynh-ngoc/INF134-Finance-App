@@ -1,129 +1,129 @@
+// lib/pages/models/transaction_provider.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 import "../../pages/wallet/models/transaction.dart";
 
 enum StatsRange { day, week, month, year }
 
-
 extension on DateTime {
   DateTime get justDate => DateTime(year, month, day);
-  DateTime get firstDayOfWeek => justDate.subtract(Duration(days: weekday - 1));
-  DateTime get firstDayOfMonth => DateTime(year, month);
 
+  DateTime get firstDayOfWeek =>
+      justDate.subtract(Duration(days: weekday - DateTime.monday));
 
-  DateTime get firstDayOfYear => DateTime(year);
+  DateTime get firstDayOfMonth => DateTime(year, month, 1);
+
+  DateTime get firstDayOfYear => DateTime(year, 1, 1);
 }
 
-
-class TransactionProvider  extends ChangeNotifier {
+class TransactionProvider extends ChangeNotifier {
   final List<Transaction> items = [];
 
   List<Transaction> mostRecent([int max = 10]) {
-    final copy = [...items]..sort((a,b) => b.date.compareTo(a.date));  
-    
-    return copy.take(max).toList(); 
-
+    final copy = [...items]..sort((a, b) => b.date.compareTo(a.date));
+    return copy.take(max).toList();
   }
 
-  Map<DateTime, double> grouped({
-    required TxKind kind, 
-    required StatsRange range, 
+  void add(Transaction item) {
+    items.add(item);
+    notifyListeners();
+  }
 
+
+  Map<DateTime, double> grouped({
+    required TxKind kind,
+    required StatsRange range,
   }) {
-    final now = DateTime.now(); 
-    DateTime Function(DateTime) bucketStart; 
-    int bucketCount; 
+    final now = DateTime.now();
+    final Map<DateTime, double> out = {};
 
     switch (range) {
       case StatsRange.day:
-        bucketStart = (d) => d.justDate;
-        bucketCount = 24;   
+        final dayStart = DateTime(now.year, now.month, now.day);
+        for (int h = 0; h < 24; h++) {
+          out[dayStart.add(Duration(hours: h))] = 0;
+        }
         break;
+
       case StatsRange.week:
-        bucketStart = (d) => d.firstDayOfWeek;
-        bucketCount = 7;
+        final monday = now.firstDayOfWeek;
+        for (int d = 0; d < 7; d++) {
+          out[monday.add(Duration(days: d))] = 0;
+        }
         break;
+
       case StatsRange.month:
-        bucketStart = (d) => d.firstDayOfMonth;
-        bucketCount = DateUtils.getDaysInMonth(now.year, now.month);
+        final year = now.year;
+        for (int m = 1; m <= 12; m++) {
+          out[DateTime(year, m, 1)] = 0;
+        }
         break;
+
       case StatsRange.year:
-        bucketStart = (d) => d.firstDayOfYear;
-        bucketCount = 12;
+        final baseYear = now.year - 5;
+        for (int i = 0; i < 6; i++) {
+          out[DateTime(baseYear + i, 1, 1)] = 0;
+        }
         break;
     }
 
-    final Map<DateTime, double> out = {
-      for (int i = 0; i < bucketCount; i++)
-        _bucketLabelStart(now, i, range): 0
-      
-    };
+    for (final item in items.where((t) => t.kind == kind)) {
+      late DateTime bucketKey;
+      switch (range) {
+        case StatsRange.day:
+        
+          bucketKey = DateTime(
+            item.date.year,
+            item.date.month,
+            item.date.day,
+            item.date.hour,
+          );
+          break;
 
-    for (final item in items.where((item) => item.kind == kind)) {
-      final k = bucketStart(item.date);
-      if (out.containsKey(k)) out[k] = out[k]! + item.amount; 
+        case StatsRange.week:
+          final mon = item.date.firstDayOfWeek;
+          bucketKey = DateTime(mon.year, mon.month, mon.day);
+          break;
+
+        case StatsRange.month:
+          bucketKey = DateTime(item.date.year, item.date.month, 1);
+          break;
+
+        case StatsRange.year:
+          bucketKey = DateTime(item.date.year, 1, 1);
+          break;
+      }
+
+      if (out.containsKey(bucketKey)) {
+        out[bucketKey] = out[bucketKey]! + item.amount;
+      }
     }
 
-    return out; 
-
-
-
-
-
-
+    return out;
   }
-     
-  Map<DateTime, List<Transaction>> byMonth() {
-    final now = DateTime.now(); 
 
-    final m = <DateTime, List<Transaction>>{
+  Map<DateTime, List<Transaction>> byMonth() {
+    final now = DateTime.now();
+
+    final Map<DateTime, List<Transaction>> m = {
       for (int i = 0; i < 6; i++)
-        DateTime(now.year, now.month - i): <Transaction>[], 
+        DateTime(now.year, now.month - i): <Transaction>[],
     };
 
-
-
-
-
-    for (final item in items)
-    {
+    for (final item in items) {
       final key = DateTime(item.date.year, item.date.month);
-      m.putIfAbsent(key, () => []).add(item); 
+      if (!m.containsKey(key)) {
+   
+      } else {
+        m[key]!.add(item);
+      }
     }
 
-    for (final list in m.values)
-    {
-      list.sort((a,b) => b.date.compareTo(a.date));
+    for (final sublist in m.values) {
+      sublist.sort((a, b) => b.date.compareTo(a.date));
     }
+
     return m;
   }
-
-
-  DateTime _bucketLabelStart(DateTime base, int offset, StatsRange r) {
-    switch (r) {
-      case StatsRange.day:
-        return DateTime(base.year, base.month, base.day, offset);
-      case StatsRange.week:
-        return base.firstDayOfWeek.add(Duration(days: offset));
-      case StatsRange.month:
-        return DateTime(base.year, base.month, offset + 1);
-      case StatsRange.year:
-        return DateTime(base.year, offset + 1);
-    }
-  }
-
-
-  void add(Transaction item)
-  {
-    items.add(item);
-
-    notifyListeners(); 
-
-  }
-
-
-
 }
-
-
-
