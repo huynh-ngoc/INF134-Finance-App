@@ -22,66 +22,110 @@ class StatisticsBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final data =
-        context.select<TransactionProvider, Map<DateTime, double>>((p) =>
-            p.grouped(kind: kind, range: range));
+    final provider = context.watch<TransactionProvider>();
+
+    final eData = provider.grouped(kind: TxKind.expense, range: range);
+    final iData = provider.grouped(kind: TxKind.income,  range: range);
 
     final groups = <BarChartGroupData>[];
-    int idx = 0;
-    data.entries.forEach((e) {
-      groups.add(BarChartGroupData(
-        x: idx++,
-        barsSpace: 2,
-        barRods: [
-          BarChartRodData(
-            toY: e.value,
-            color: color,
-            width: 12,
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ],
-      ));
-    });
-
-    final maxY = data.values.isEmpty ? 10 : data.values.reduce((a, b) => a > b ? a : b);
-
-    return BarChart(
-      BarChartData(
-        maxY: maxY * 1.15,
-        gridData: FlGridData(show: false),
-        borderData: FlBorderData(show: false),
-        titlesData: FlTitlesData(
-          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 24,
-              getTitlesWidget: (v, _) => Text(
-                _label(data.keys.elementAt(v.toInt()), range),
-                style: const TextStyle(fontSize: 11),
-              ),
+    int x = 0;
+    eData.forEach((d, eVal) {
+      final iVal = iData[d] ?? 0;
+      groups.add(
+        BarChartGroupData(
+          x: x++,
+          barRods: [
+            BarChartRodData(
+              toY: eVal,
+              width: 8,
+              color: kind == TxKind.expense ? Colors.black : Colors.grey.shade400,
+              borderRadius: BorderRadius.circular(3),
             ),
-          ),
+        BarChartRodData(
+          toY: iVal,
+          width: 8,
+          color: kind == TxKind.income ? Colors.black : Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(3),
         ),
-        barGroups: groups,
-      ),
-      duration: const Duration(milliseconds: 750),
-      curve: Curves.easeOutCubic,
-    );
-  }
+      ],
+      barsSpace: 6,
+    ),
+  );
+});
 
+final allVals = [...eData.values, ...iData.values];
+final rawMax = (allVals.isEmpty ? 0 : allVals.reduce((a, b) => a > b ? a : b));
+final maxY = (rawMax < 5000 ? 5000 : rawMax).toDouble();
+
+return BarChart(
+  BarChartData(
+    minY: 0,
+    maxY: maxY,
+    gridData: FlGridData(
+      show: true,
+      drawHorizontalLine: true,
+      horizontalInterval: 1000,
+      getDrawingHorizontalLine: (idx) =>
+          FlLine(color: Colors.grey.shade300, strokeWidth: 1),
+    ),
+    borderData: FlBorderData(show: false),
+    titlesData: FlTitlesData(
+      leftTitles: AxisTitles(
+        sideTitles: SideTitles(
+          showTitles: true,
+          interval: 1000,
+          reservedSize: 32,
+          getTitlesWidget: (value, _) {
+            final intK = (value ~/ 1000);
+            return Text(
+              '${intK}k',
+              style: const TextStyle(fontSize: 10),
+            );
+          },
+        ),
+      ),
+      rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+
+      bottomTitles: AxisTitles(
+        sideTitles: SideTitles(
+          showTitles: true,
+          getTitlesWidget: (double value, TitleMeta meta) {
+            final int index = value.toInt();
+            if (index < 0 || index >= eData.keys.length) return const SizedBox();
+            final dt = eData.keys.elementAt(index);
+            return Text(
+              _label(dt, range),
+              style: const TextStyle(fontSize: 10),
+            );
+          },
+        ),
+      ),
+    ),
+    barGroups: groups,
+  ),
+  duration: const Duration(milliseconds: 400),
+      curve: Curves.easeOut,
+    );
+  
+}
   String _label(DateTime d, StatsRange r) {
     switch (r) {
       case StatsRange.day:
-        return d.hour.toString();
+        final hr = d.hour;
+        return (hr % 4 == 0) ? '${hr}:00 ' : '';
+
       case StatsRange.week:
-        return ['M','T','W','T','F','S','S'][d.weekday - 1];
+        return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][d.weekday - 1];
+
       case StatsRange.month:
-        return d.day.toString();
+        return [
+          'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ][d.month - 1];
+
       case StatsRange.year:
-        return ['J','F','M','A','M','J','J','A','S','O','N','D'][d.month - 1];
+        return '${d.year}';
     }
   }
 }

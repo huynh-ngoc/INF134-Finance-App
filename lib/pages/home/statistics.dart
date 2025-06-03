@@ -72,37 +72,47 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
            
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,   
               children: [
-                Expanded(child: _statCard('\$', 'Expenses',
+                Expanded(
+                  child: _statCard(
+                    '\$', 'Expenses',
                     selected: _kind == TxKind.expense,
-                    onTap: () => setState(() => _kind = TxKind.expense))),
+                    onTap: () => setState(() => _kind = TxKind.expense),
+                  ),
+                ),
                 const SizedBox(width: 12),
-                Expanded(child: _statCard('\$', 'Income',
+                Expanded(
+                  child: _statCard(
+                    '\$', 'Income',
                     selected: _kind == TxKind.income,
                     onTap: () => setState(() => _kind = TxKind.income),
-                    inverted: true)),
+                  ),
+                ),
               ],
             ),
 
             const SizedBox(height: 24),
 
-            // Graph TBD
+          
             SizedBox(
               height: 200,
               child: Card(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
+                color: Colors.grey.shade50,
                 child: Padding(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(12),
                   child: StatisticsBar(
-                    kind:  _kind,
+                    kind: _kind,
                     range: _range,
-                    color: _kind == TxKind.expense ? Colors.black : Colors.green,
+                    color:
+                        (_kind == TxKind.expense) ? Colors.black : Colors.green,
                   ),
                 ),
               ),
             ),
 
-            // transactions list,
           ],
         ),
       ),
@@ -110,15 +120,13 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
    Widget _statCard(String amount, String label,
-      {required bool selected,
-       required VoidCallback onTap,
-       bool inverted = false}) {
+      {required bool selected, required VoidCallback onTap, bool inverted = false}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: selected ^ inverted ? Colors.black : Colors.white,
+          color: selected ? Colors.black : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.black12),
         ),
@@ -126,13 +134,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
           children: [
             Text(amount,
                 style: TextStyle(
-                    color: selected ^ inverted ? Colors.white : Colors.black,
+                    color: selected ? Colors.white : Colors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 18)),
             Text(label,
                 style: TextStyle(
-                    color:
-                        selected ^ inverted ? Colors.white70 : Colors.black54)),
+                     color: selected ? Colors.white70 : Colors.black54)),
           ],
         ),
       ),
