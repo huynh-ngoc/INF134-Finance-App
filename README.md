@@ -63,3 +63,6 @@ git push origin your-branch-name
 
 3. Then, create a Pull Request (PR) for review before merging into main.
 
+## Link to our Demo Video 
+
+https://uci.zoom.us/rec/play/mPGgblUOV0UykpjZerIey6Tbcu9blkkwsLjap_NPcvNzYARRE-AbSxpdlAXde-h5tT-Su3C69NSt6Wtf.KESVkbWnMNDCCFKF?eagerLoadZvaPages=sidemenu.billing.plan_management&accessLevel=meeting&canPlayFromShare=true&from=share_recording_detail&continueMode=true&componentName=rec-play&originRequestUrl=https%3A%2F%2Fuci.zoom.us%2Frec%2Fshare%2FJRdUAdqZtJTQFUGuP7QJGC7bzg4kmqQQlHKrIznCDKNHg-ITRVCvg53CYXG8Kdul.ppECOMCJT7NuUQu-
